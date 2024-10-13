@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-// import { handleLogoutRequest,handleSigninRequest } from "../controllers/authControlller";
+const authControlller_1 = require("../controllers/authControlller");
 const router = (0, express_1.Router)();
-router.post("/login");
-router.delete('/logout');
+router.post("/login", authControlller_1.handleSigninRequest);
+router.delete('/logout', authControlller_1.handleLogoutRequest);
 exports.default = router;

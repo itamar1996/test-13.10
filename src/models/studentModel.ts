@@ -7,7 +7,8 @@ export interface ITest {
 }
 
 export interface Istudent extends Document {
-  name: string;
+  _id: Types.ObjectId;
+  Username: string;
   email:string;
   password: string;
   role:string;
@@ -28,15 +29,11 @@ const TestSchema = new mongoose.Schema<ITest>({
 });
 
 const StudentSchema = new mongoose.Schema<Istudent>({
-  name: {
+  Username: {
     type: String,
     required: true,
   },
   email: {
-    type: String,
-    required: true,
-  },
-  password:{
     type: String,
     required: true,
     validate: {
@@ -45,6 +42,10 @@ const StudentSchema = new mongoose.Schema<Istudent>({
       },
       message: props => `${props.value} is not a valid email!`
     }
+  },
+  password:{
+    type: String,
+    required: true,
   },
   role:{
     type:String,
@@ -59,4 +60,4 @@ const StudentSchema = new mongoose.Schema<Istudent>({
 });
 
 
-export default mongoose.model<Istudent>("Post",StudentSchema);
+export default mongoose.model<Istudent>("Student",StudentSchema);

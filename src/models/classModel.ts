@@ -5,8 +5,7 @@ export interface IClass extends Document {
   avg: number;
   students: Types.ObjectId[];
 }
-
-const ClassSchema = new mongoose.Schema<IClass>({
+const ClassSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -15,13 +14,10 @@ const ClassSchema = new mongoose.Schema<IClass>({
     type: Number,
     required: false,
   },
-  students: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
-    }
-  ],
+  students: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student' // Reference the student model
+  }]
 });
 
 export default mongoose.model<IClass>("Class", ClassSchema);

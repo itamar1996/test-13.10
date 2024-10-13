@@ -29,7 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const validator_1 = __importDefault(require("validator"));
 const TeacherSchema = new mongoose_1.Schema({
-    name: {
+    Username: {
         type: String,
         unique: true,
         required: [true, 'Username is required'],
@@ -53,12 +53,12 @@ const TeacherSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        default: "student"
+        default: "teacher"
     },
     class: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         required: true,
-        ref: "class"
+        ref: "Class"
     }
 });
 exports.default = mongoose_1.default.model("teacher", TeacherSchema);

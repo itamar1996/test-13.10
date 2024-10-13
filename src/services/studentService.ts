@@ -1,24 +1,41 @@
+import mongoose, { Types } from "mongoose";
 import registerDTO from "../DTO/registerDTO";
 import responseData from "../DTO/responceDataDTO";
+import classModel from "../models/classModel";
 import studentModel from "../models/studentModel";
 import bcrypt from 'bcrypt'
 export default class UserService{
     public static async signup(user:registerDTO):Promise<responseData<{ id: string }>>{
         try {                        
-            const { username, email ,password} = user;
-            if(!username || !email || !password){
+            const { username, email ,password,classname } = user;
+            if(!username || !email || !password ||!classname){
                 return {
                     err: true,
                     message: "missing detales",
                     status: 400,
                 };
             }
+            const classDoc = await classModel.findOne({ name: classname });
+            if(!classDoc){
+                return {
+                    err: true,
+                    message: "class not found",
+                    status: 400,
+                };
+            }
+
             const dbUser = new studentModel({
-                username,
+                Username: username,
                 email,
-                password:await bcrypt.hash(password, 10)
-              });              
-            await dbUser.save()  
+                password: await bcrypt.hash(password, 10),
+                class: classDoc._id 
+            });
+            
+            await dbUser.save();
+            
+            classDoc.students.push(dbUser._id as mongoose.Types.ObjectId); 
+            
+            await classDoc.save();
             return {
                 err: false,
                 message: "created",

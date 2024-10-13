@@ -1,11 +1,11 @@
 import {Router } from "express";
-// import { handleLogoutRequest,handleSigninRequest } from "../controllers/authControlller";
+import { handleLogoutRequest,handleSigninRequest } from "../controllers/authControlller";
 
 const router : Router = Router();
 
 
-router.post("/login", );
+router.post("/login",handleSigninRequest );
 
-router.delete('/logout',)
+router.delete('/logout',handleLogoutRequest)
 
 export default router

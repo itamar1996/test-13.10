@@ -12,14 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = require("mongoose");
+const teacherModel_1 = __importDefault(require("../models/teacherModel"));
+const teacherModel_2 = __importDefault(require("../models/teacherModel"));
 const classModel_1 = __importDefault(require("../models/classModel"));
-const studentModel_1 = __importDefault(require("../models/studentModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-class UserService {
+class techerService {
     static signup(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { username, email, password, classname } = user;
+                console.log(username);
                 if (!username || !email || !password || !classname) {
                     return {
                         err: true,
@@ -28,22 +31,24 @@ class UserService {
                     };
                 }
                 const classDoc = yield classModel_1.default.findOne({ name: classname });
-                if (!classDoc) {
+                if (classDoc) {
                     return {
                         err: true,
-                        message: "class not found",
+                        message: "the class already have a techer",
                         status: 400,
                     };
                 }
-                const dbUser = new studentModel_1.default({
+                const dbClass = new classModel_1.default({
+                    name: classname
+                });
+                yield dbClass.save();
+                const dbUser = new teacherModel_1.default({
                     Username: username,
                     email,
                     password: yield bcrypt_1.default.hash(password, 10),
-                    class: classDoc._id
+                    class: dbClass._id
                 });
                 yield dbUser.save();
-                classDoc.students.push(dbUser._id);
-                yield classDoc.save();
                 return {
                     err: false,
                     message: "created",
@@ -61,19 +66,50 @@ class UserService {
             }
         });
     }
-    static GetGrades(studentId) {
+    static addGrade(gradeData, teacherId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const userGrades = yield studentModel_1.default.findById(studentId).select('tests');
+                const { studentId, testName, grade } = gradeData;
+                const teacher = yield teacherModel_1.default.findById(teacherId)
+                    .select('class');
+                if (!teacher) {
+                    return {
+                        err: true,
+                        message: "Teacher not found",
+                        status: 404,
+                    };
+                }
+                // const classDoc = await classModel.findById(teacher?.class).populate('students','_id tests')
+                const classDoc = yield classModel_1.default.findById(teacher === null || teacher === void 0 ? void 0 : teacher.class).populate('students', '_id tests');
+                if (!classDoc) {
+                    return {
+                        err: true,
+                        message: "class not found",
+                        status: 404,
+                    };
+                }
+                const student = classDoc.students.find(s => s._id.equals(new mongoose_1.Types.ObjectId(studentId)));
+                if (!student) {
+                    return {
+                        err: true,
+                        message: "Student not found",
+                        status: 404,
+                    };
+                }
+                student.tests.push({
+                    name: testName,
+                    grade
+                });
+                yield student.save();
                 return {
                     err: false,
-                    message: "Fetched grades successfully",
+                    message: "Test added successfully",
                     status: 200,
-                    data: userGrades
+                    data: student
                 };
             }
             catch (error) {
-                console.error("Error fetching grades:", error);
+                console.error("Error fetching users:", error);
                 return {
                     err: true,
                     message: "Server error",
@@ -83,24 +119,23 @@ class UserService {
             }
         });
     }
-    static GetGrade(studentId, testId) {
+    static getByUserName(username) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const test = yield studentModel_1.default.findById(studentId).select('tests')
-                    .findById(testId);
-                if (!test) {
+                const user = yield teacherModel_2.default.findOne({ username }).select('id username email');
+                if (!user) {
                     return {
                         err: true,
-                        message: "test not found",
+                        message: "User not found",
                         status: 404,
                         data: null
                     };
                 }
                 return {
                     err: false,
-                    message: "Fetched test successfully",
+                    message: "Fetched user successfully",
                     status: 200,
-                    data: test
+                    data: user
                 };
             }
             catch (error) {
@@ -115,4 +150,4 @@ class UserService {
         });
     }
 }
-exports.default = UserService;
+exports.default = techerService;

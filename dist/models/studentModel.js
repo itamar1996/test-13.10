@@ -16,15 +16,11 @@ const TestSchema = new mongoose_1.default.Schema({
     },
 });
 const StudentSchema = new mongoose_1.default.Schema({
-    name: {
+    Username: {
         type: String,
         required: true,
     },
     email: {
-        type: String,
-        required: true,
-    },
-    password: {
         type: String,
         required: true,
         validate: {
@@ -33,6 +29,10 @@ const StudentSchema = new mongoose_1.default.Schema({
             },
             message: props => `${props.value} is not a valid email!`
         }
+    },
+    password: {
+        type: String,
+        required: true,
     },
     role: {
         type: String,
@@ -45,4 +45,4 @@ const StudentSchema = new mongoose_1.default.Schema({
     },
     tests: [TestSchema]
 });
-exports.default = mongoose_1.default.model("Post", StudentSchema);
+exports.default = mongoose_1.default.model("Student", StudentSchema);

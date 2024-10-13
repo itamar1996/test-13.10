@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import validator from "validator";
 
 export interface ITeacher extends Document {
-  name: string;
+  Username: string;
   password:string;
   email: string;
   role:string;
@@ -10,7 +10,7 @@ export interface ITeacher extends Document {
 }
 
 const TeacherSchema = new Schema<ITeacher>({
-  name: {
+  Username: {
     type: String,
     unique: true,
     required: [true, 'Username is required'],
@@ -34,12 +34,12 @@ const TeacherSchema = new Schema<ITeacher>({
   },
   role:{
     type:String,
-    default:"student"
+    default:"teacher"
   },
   class:{
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref:"class"
+    ref:"Class"
   }
 });
 

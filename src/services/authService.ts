@@ -24,10 +24,13 @@ export default class AuthService {
                 }
             }
             let user = await 
-            studentModel.findOne({ username }).select('+password');
+            studentModel.findOne({Username: username }).select('+password');
             if (!user) {
+                console.log("dsg");
+                
                 user = await 
-                teacherModel.findOne({ username }).select('+password');
+                teacherModel.findOne({Username: username }).select('+password');
+                console.log(user);
             }
             if (!user) {
                 return {

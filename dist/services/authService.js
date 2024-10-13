@@ -28,9 +28,11 @@ class AuthService {
                         status: 400
                     };
                 }
-                let user = yield studentModel_1.default.findOne({ username }).select('+password');
+                let user = yield studentModel_1.default.findOne({ Username: username }).select('+password');
                 if (!user) {
-                    user = yield teacherModel_1.default.findOne({ username }).select('+password');
+                    console.log("dsg");
+                    user = yield teacherModel_1.default.findOne({ Username: username }).select('+password');
+                    console.log(user);
                 }
                 if (!user) {
                     return {

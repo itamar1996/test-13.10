@@ -13,12 +13,9 @@ const ClassSchema = new mongoose_1.default.Schema({
         type: Number,
         required: false,
     },
-    students: [
-        {
+    students: [{
             type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: "User",
-            required: false,
-        }
-    ],
+            ref: 'Student' // Reference the student model
+        }]
 });
 exports.default = mongoose_1.default.model("Class", ClassSchema);

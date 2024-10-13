@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handelEditeGrade = exports.handelGetGrade = exports.handelGetAVG = exports.handelGetGrades = exports.handelAddGrade = exports.handelRegister = void 0;
-const studentService_1 = __importDefault(require("../services/studentService"));
+exports.handelAddGrade = exports.handelRegister = void 0;
+const techerService_1 = __importDefault(require("../services/techerService"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const handelRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield studentService_1.default.signup(req.body);
+        const result = yield techerService_1.default.signup(req.body);
         res.status(200).json(result);
     }
     catch (error) {
@@ -26,7 +27,10 @@ const handelRegister = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.handelRegister = handelRegister;
 const handelAddGrade = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield studentService_1.default.getAll();
+        const token = req.cookies.auth_token;
+        const decodedToken = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const teacherId = decodedToken.id;
+        const result = yield techerService_1.default.addGrade(req.body, teacherId);
         res.status(200).json(result);
     }
     catch (error) {
@@ -34,43 +38,35 @@ const handelAddGrade = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.handelAddGrade = handelAddGrade;
-const handelGetGrades = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield studentService_1.default.getByUserName(req.params.username);
-        res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-exports.handelGetGrades = handelGetGrades;
-const handelGetAVG = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield studentService_1.default.getByUserName(req.params.username);
-        res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-exports.handelGetAVG = handelGetAVG;
-const handelGetGrade = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield studentService_1.default.getByUserName(req.params.username);
-        res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-exports.handelGetGrade = handelGetGrade;
-const handelEditeGrade = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield studentService_1.default.getByUserName(req.params.username);
-        res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-exports.handelEditeGrade = handelEditeGrade;
+// export const handelGetGrades = async (req: Request, res: Response):Promise<void> => {
+//     try {
+//         const result =  await UserService.getByUserName(req.params.username);
+//         res.status(200).json(result)
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+// export const handelGetAVG = async (req: Request, res: Response):Promise<void> => {
+//     try {
+//         const result =  await UserService.getByUserName(req.params.username);
+//         res.status(200).json(result)
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+// export const handelGetGrade = async (req: Request, res: Response):Promise<void> => {
+//     try {
+//         const result =  await UserService.getByUserName(req.params.username);
+//         res.status(200).json(result)
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+// export const handelEditeGrade = async (req: Request, res: Response):Promise<void> => {
+//     try {
+//         const result =  await UserService.getByUserName(req.params.username);
+//         res.status(200).json(result)
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
