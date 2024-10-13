@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGrade = exports.getGrades = exports.handelRegister = void 0;
-const postService_1 = __importDefault(require("../services/postService"));
+exports.handelGetGrade = exports.handelGetGrades = exports.handelRegister = void 0;
+const studentService_1 = __importDefault(require("../services/studentService"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // Create a new post
 const handelRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield UserService.signup(req.body);
+        const result = yield studentService_1.default.signup(req.body);
         res.status(200).json(result);
     }
     catch (error) {
@@ -26,26 +26,29 @@ const handelRegister = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.handelRegister = handelRegister;
-const getGrades = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const handelGetGrades = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.auth_token;
         const decodedToken = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        const userId = decodedToken.id;
-        const result = yield postService_1.default.deleteByPostId(req.params.id, userId);
+        const studentId = decodedToken.id;
+        const result = yield studentService_1.default.GetGrades(studentId);
         res.status(200).json(result);
     }
     catch (error) {
         console.log(error);
     }
 });
-exports.getGrades = getGrades;
-const getGrade = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.handelGetGrades = handelGetGrades;
+const handelGetGrade = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield postService_1.default.getAllPosts();
+        const token = req.cookies.auth_token;
+        const decodedToken = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const studentId = decodedToken.id;
+        const result = yield studentService_1.default.GetGrade(studentId, req.params.id);
         res.status(200).json(result);
     }
     catch (error) {
         console.log(error);
     }
 });
-exports.getGrade = getGrade;
+exports.handelGetGrade = handelGetGrade;

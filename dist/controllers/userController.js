@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUser = exports.getUsers = exports.createUser = void 0;
-const userService_1 = __importDefault(require("../services/userService"));
+const studentService_1 = __importDefault(require("../services/studentService"));
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield userService_1.default.signup(req.body);
+        const result = yield studentService_1.default.signup(req.body);
         res.status(200).json(result);
     }
     catch (error) {
@@ -26,7 +26,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createUser = createUser;
 const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield userService_1.default.getAll();
+        const result = yield studentService_1.default.getAll();
         res.status(200).json(result);
     }
     catch (error) {
@@ -36,7 +36,7 @@ const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getUsers = getUsers;
 const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield userService_1.default.getByUserName(req.params.username);
+        const result = yield studentService_1.default.getByUserName(req.params.username);
         res.status(200).json(result);
     }
     catch (error) {

@@ -2,8 +2,7 @@ import { Router } from "express";
 import {
   handelRegister,
   getGrades,
-  getGrade,
-  updatePost
+  getGrade
 } from "../controllers/studentController";
 // import verifyUser from "../middleware/verifyUser";
 

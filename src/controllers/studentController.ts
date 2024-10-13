@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import newPostDTO from "../DTO/newPostDTO";
-import PostService from "../services/postService";
+import studentService from "../services/studentService";
 import updatePostDTO from "../DTO/updatePostDTO";
 import addCommentDTO from "../DTO/addCommentDTO";
 import jwt from 'jsonwebtoken';
@@ -12,22 +12,22 @@ export const handelRegister = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const result =  await UserService.signup(req.body);
+    const result =  await studentService.signup(req.body);
     res.status(200).json(result)
 } catch (error) {
     console.log(error);
 }
 };
 
-export const getGrades = async (
+export const handelGetGrades = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {    
     const token = req.cookies.auth_token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET!);
-    const userId = (decodedToken as any).id;
-    const result =  await PostService.deleteByPostId(req.params.id,userId);
+    const studentId = (decodedToken as any).id;
+    const result =  await studentService.GetGrades(studentId);
 
     res.status(200).json(result)
 } catch (error) {
@@ -35,12 +35,15 @@ export const getGrades = async (
 }
 };
 
-export const getGrade = async (
+export const handelGetGrade = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
-    const result =  await PostService.getAllPosts();
+    const token = req.cookies.auth_token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!);
+    const studentId = (decodedToken as any).id;
+    const result =  await studentService.GetGrade(studentId,req.params.id);
     res.status(200).json(result)
 } catch (error) {
     console.log(error);
