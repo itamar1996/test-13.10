@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const teacherModel_1 = __importDefault(require("../models/teacherModel"));
-const teacherModel_2 = __importDefault(require("../models/teacherModel"));
 const classModel_1 = __importDefault(require("../models/classModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const studentModel_1 = __importDefault(require("../models/studentModel"));
 class techerService {
     static signup(user) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -79,7 +79,6 @@ class techerService {
                         status: 404,
                     };
                 }
-                // const classDoc = await classModel.findById(teacher?.class).populate('students','_id tests')
                 const classDoc = yield classModel_1.default.findById(teacher === null || teacher === void 0 ? void 0 : teacher.class).populate('students', '_id tests');
                 if (!classDoc) {
                     return {
@@ -119,27 +118,81 @@ class techerService {
             }
         });
     }
-    static getByUserName(username) {
+    static GetGrades(teacherId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield teacherModel_2.default.findOne({ username }).select('id username email');
-                if (!user) {
+                const teacher = yield teacherModel_1.default.findById(teacherId)
+                    .select('class');
+                if (!teacher) {
                     return {
                         err: true,
-                        message: "User not found",
+                        message: "Teacher not found",
                         status: 404,
-                        data: null
+                    };
+                }
+                const classDoc = yield classModel_1.default.findById(teacher === null || teacher === void 0 ? void 0 : teacher.class).populate('students', 'name tests');
+                if (!classDoc) {
+                    return {
+                        err: true,
+                        message: "class not found",
+                        status: 404,
                     };
                 }
                 return {
                     err: false,
                     message: "Fetched user successfully",
                     status: 200,
-                    data: user
+                    data: classDoc
                 };
             }
             catch (error) {
                 console.error("Error fetching user:", error);
+                return {
+                    err: true,
+                    message: "Server error",
+                    status: 500,
+                    data: error
+                };
+            }
+        });
+    }
+    static GetGrade(teacherId, studentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const teacher = yield teacherModel_1.default.findById(teacherId)
+                    .select('class');
+                if (!teacher) {
+                    return {
+                        err: true,
+                        message: "Teacher or class not found",
+                        status: 404,
+                    };
+                }
+                const student = yield studentModel_1.default.findById(studentId)
+                    .select('class tests');
+                if (!student) {
+                    return {
+                        err: true,
+                        message: "student not found",
+                        status: 404,
+                    };
+                }
+                if (student.class != teacher.class) {
+                    return {
+                        err: true,
+                        message: "class not youres",
+                        status: 402,
+                    };
+                }
+                return {
+                    err: false,
+                    message: "Fetched student grades successfully",
+                    status: 200,
+                    data: student.tests,
+                };
+            }
+            catch (error) {
+                console.error("Error fetching grades:", error);
                 return {
                     err: true,
                     message: "Server error",

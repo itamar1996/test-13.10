@@ -6,8 +6,8 @@ const teacherController_1 = require("../controllers/teacherController");
 const techerRoute = (0, express_1.Router)();
 techerRoute.post("/", teacherController_1.handelRegister); //create user
 techerRoute.post("/grades", teacherController_1.handelAddGrade); //add grade
-// techerRoute.get("/",handelGetGrades);//get grades for class
+techerRoute.get("/grades", teacherController_1.handelGetGrades); //get grades for class
 // techerRoute.get("/avg",handelGetAVG );//get avg grades
-// techerRoute.get("/:id",handelGetGrade );//get grades for student
+techerRoute.get("/:id", teacherController_1.handelGetGrade); //get grades for student
 // techerRoute.patch("/", handelEditeGrade);//edite grade for student
 exports.default = techerRoute;

@@ -23,20 +23,9 @@ paths:
                 username:
                   type: string
                 password:
-                  type: string
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-        '400':
-          description: Invalid username or password
+                  type: string   
 
+    
   /auth/logout:
     delete:
       summary: Logout a user
@@ -46,47 +35,10 @@ paths:
           description: Logout successful
         '500':
           description: Server error during logout
-          
-  /student:
-    post:
-      summary: register a techer
-      tags: [Auth]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - username
-                - email
-                - password
-                - classname
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-                email:
-                  type: string
-                classname:
-                  type: string
-      responses:
-        '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-        '400':
-          description: Invalid username or password
 
-  /techer:
+  /students:
     post:
-      summary: register a techer
+      summary: Register a student
       tags: [Auth]
       requestBody:
         required: true
@@ -110,7 +62,7 @@ paths:
                   type: string
       responses:
         '200':
-          description: Login successful
+          description: Student registered successfully
           content:
             application/json:
               schema:
@@ -119,11 +71,86 @@ paths:
                   token:
                     type: string
         '400':
-          description: Invalid username or password
+          description: Invalid input data
+
+  
+
+  /teachers:
+    post:
+      summary: Register a teacher
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - classname
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                classname:
+                  type: string
+      responses:
+        '200':
+          description: Teacher registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Invalid input data
+  
+  /teachers:
+    get:
+      summary: Register a teacher
+      tags: [Auth]
+      responses:
+        '200':
+          description: Teacher registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Invalid input data
           
+  /techer/avg:
+    get:
+      summary: Register a teacher
+      tags: [Auth]
+      responses:
+        '200':
+          description: Teacher registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Invalid input data
+
+ 
+
   /techer/grades:
     post:
-      summary: add a grade
+      summary: Add a grade
       tags: [Auth]
       requestBody:
         required: true
@@ -144,7 +171,7 @@ paths:
                   type: number
       responses:
         '200':
-          description: Login successful
+          description: Grade added successfully
           content:
             application/json:
               schema:
@@ -153,10 +180,22 @@ paths:
                   token:
                     type: string
         '400':
-          description: Invalid username or password
+          description: Invalid input data
+        '404':
+          description: Student not found
 
-
-
-
-
-# הוסף כאן נתיבים נוספים...
+    get:
+      summary: Get grades for a class
+      tags: [Auth]
+      responses:
+        '200':
+          description: Grades retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  # ... properties of grade object
+        '400':
+          description: Invalid input data

@@ -2,12 +2,10 @@ import { Types } from "mongoose";
 import registerDTO from "../DTO/registerDTO";
 import responseData from "../DTO/responceDataDTO";
 import teacherModel from "../models/teacherModel";
-import userModel from "../models/teacherModel";
-import classModel from "../models/classModel";
+import classModel, { IClass } from "../models/classModel";
 import bcrypt from 'bcrypt'
 import addGradeDTO from "../DTO/addGradeDTO";
-import { log } from "console";
-import { Istudent } from "../models/studentModel";
+import studentModel, { Istudent } from "../models/studentModel";
 export default class techerService{
     public static async signup(user:registerDTO):Promise<responseData<{ id: string }>>{
         try {                        
@@ -68,7 +66,6 @@ export default class techerService{
                   status: 404,
                 };
               }
-            // const classDoc = await classModel.findById(teacher?.class).populate('students','_id tests')
             const classDoc = await classModel.findById(teacher?.class).populate<{ students: Istudent[] }>('students', '_id tests');
 
             if (!classDoc) {
@@ -79,8 +76,6 @@ export default class techerService{
               };
             }
             const student = classDoc.students.find(s => s._id.equals(new Types.ObjectId(studentId)));
-
-            
             if (!student) {
               return {
                 err: true,
@@ -88,50 +83,59 @@ export default class techerService{
                 status: 404,
               };
             }
-            
             student.tests.push({
                 name: testName,
                 grade
               });
-            
             await student.save();
-            
             return {
               err: false,
               message: "Test added successfully",
               status: 200,
               data:student
             };
-            
-           
         } catch (error) {
             console.error("Error fetching users:", error); 
             return {
                 err: true,
+
                 message: "Server error",
                 status: 500,
                 data: error 
             };
         }
+
     }
-    public static async getByUserName(username: string): Promise<responseData<{ id: string; username: string; email: string }>> {
+
+    public static async GetGrades(teacherId:string): Promise<responseData<{ name: string; grade: number;}>> {
         try {
-            const user = await userModel.findOne({ username }).select('id username email'); 
-    
-            if (!user) {
+            
+            const teacher = await teacherModel.findById(teacherId)
+            .select('class')
+            if (!teacher) {
                 return {
-                    err: true,
-                    message: "User not found",
-                    status: 404,
-                    data: null 
+                  err: true,
+                  message: "Teacher not found",
+                  status: 404,
                 };
+              }
+            const classDoc = await classModel.findById(teacher?.class).populate<{ students: Istudent[] }>('students', 'name tests');
+
+
+
+            if (!classDoc) {
+              return {
+                err: true,
+                message: "class not found",
+                status: 404,
+              };
             }
     
             return {
                 err: false,
                 message: "Fetched user successfully",
                 status: 200,
-                data: user
+                data: classDoc
             };
         } catch (error) {
             console.error("Error fetching user:", error); 
@@ -143,6 +147,105 @@ export default class techerService{
             };
         }
     }
+    public static async GetGrade(teacherId: string, studentId: string): Promise<responseData<{ name: string; grade: number }[]>> {
+        try {
+            const teacher = await teacherModel.findById(teacherId)
+                .select('class')
+    
+            if (!teacher) {
+                return {
+                    err: true,
+                    message: "Teacher or class not found",
+                    status: 404,
+                };
+            }
+    
+            const student = await studentModel.findById(studentId)
+            .select('class tests');
+            if (!student ) {
+                return {
+                    err: true,
+                    message: "student not found",
+                    status: 404,
+                };
+            }
+            if (student.class != teacher.class ) {
+                return {
+                    err: true,
+                    message: "class not youres",
+                    status: 402,
+                };
+            }
+            return {
+                err: false,
+                message: "Fetched student grades successfully",
+                status: 200,
+                data: student.tests,
+            };
+        } catch (error) {
+            console.error("Error fetching grades:", error);
+            return {
+                err: true,
+                message: "Server error",
+                status: 500,
+                data: error
+            };
+        }
+    }
+    
+    
+    
+    // public static async GetAVG(teacherId: string): Promise<responseData<{ name: string; avg: number }>> {
+    //     try {
+    //         const teacher = await teacherModel.findById(teacherId).select('class');
+    //         if (!teacher) {
+    //             return {
+    //                 err: true,
+    //                 message: "Teacher not found",
+    //                 status: 404,
+    //             };
+    //         }
+    
+    //         const result = await classModel.aggregate([
+    //             { $match: { _id: new mongoose.Types.ObjectId(teacher.class) } },
+    //             { $unwind: "$students" },
+    //             { $unwind: "$students.tests" },
+    //             {
+    //                 $group: {
+    //                     _id: "$_id",
+    //                     averageGrade: { $avg: "$students.tests.grade" },
+    //                     name: { $first: "$name" }
+    //                 }
+    //             }
+    //         ]);
+    
+    //         if (result.length === 0) {
+    //             const classInfo = await classModel.findById(teacher.class).select('name');
+    //             return {
+    //                 err: false,
+    //                 message: "Class has no grades yet",
+    //                 status: 200,
+    //                 data: { name: classInfo?.name || "Unknown", avg: null }
+    //             };
+    //         }
+    
+    //         return {
+    //             err: false,
+    //             message: "Fetched average grade successfully",
+    //             status: 200,
+    //             data: { name: result[0].name, avg: result[0].averageGrade }
+    //         };
+    //     } catch (error) {
+    //         console.error("Error fetching average grade:", error);
+    //         return {
+    //             err: true,
+    //             message: "Server error",
+    //             status: 500,
+    //             data: error
+    //         };
+    //     }
+    // }
+    
     
     
 }

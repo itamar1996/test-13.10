@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IClass extends Document {
+  _id: Types.ObjectId;
   name: string;
   avg: number;
   students: Types.ObjectId[];
