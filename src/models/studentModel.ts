@@ -10,10 +10,10 @@ export interface Istudent extends Document {
   name: string;
   email:string;
   password: string;
+  role:string;
   class: Types.ObjectId;
   tests: ITest[];
 }
-
 
 const TestSchema = new mongoose.Schema<ITest>({
   name: {
@@ -26,6 +26,7 @@ const TestSchema = new mongoose.Schema<ITest>({
   },
  
 });
+
 const StudentSchema = new mongoose.Schema<Istudent>({
   name: {
     type: String,
@@ -44,6 +45,10 @@ const StudentSchema = new mongoose.Schema<Istudent>({
       },
       message: props => `${props.value} is not a valid email!`
     }
+  },
+  role:{
+    type:String,
+    default:"student"
   },
   class: {
     type: mongoose.Schema.Types.ObjectId,

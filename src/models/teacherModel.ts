@@ -5,6 +5,7 @@ export interface ITeacher extends Document {
   name: string;
   password:string;
   email: string;
+  role:string;
   class: Types.ObjectId;
 }
 
@@ -30,6 +31,10 @@ const TeacherSchema = new Schema<ITeacher>({
       },
       message: props => `${props.value} is not a valid email!`
     }
+  },
+  role:{
+    type:String,
+    default:"student"
   },
   class:{
     type: mongoose.Schema.Types.ObjectId,

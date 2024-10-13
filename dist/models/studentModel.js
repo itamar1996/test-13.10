@@ -34,6 +34,10 @@ const StudentSchema = new mongoose_1.default.Schema({
             message: props => `${props.value} is not a valid email!`
         }
     },
+    role: {
+        type: String,
+        default: "student"
+    },
     class: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         required: true,
