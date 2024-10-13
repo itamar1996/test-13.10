@@ -1,18 +1,16 @@
 import { Router } from "express";
-// import {
-//   createPost,
-//   getPosts,
-//   getPost,
-//   updatePost,
-//   deletePost,
-//   addComment,
-// } from "../controllers/postController";
+import {
+  handelRegister,
+  getGrades,
+  getGrade,
+  updatePost
+} from "../controllers/studentController";
 // import verifyUser from "../middleware/verifyUser";
 
 const studentRouter = Router();
 
-studentRouter.post("/", );//create user
-studentRouter.get("/", );//get grades
-studentRouter.get("/:id", );//get grade
+studentRouter.post("/",handelRegister );//create user
+studentRouter.get("/", getGrades);//get grades
+studentRouter.get("/:id", getGrade);//get grade
 
 export default studentRouter;
