@@ -3,13 +3,16 @@ info:
   title: My API
   version: 1.0.0
   description: A sample API for demonstration
+
 servers:
-  - url: http://localhost:3000/api
+  - url: http://localhost:3001/api
+
 paths:
   /auth/login:
     post:
       summary: Authenticate a user
-      tags: [Auth]
+      tags: 
+        - Auth
       requestBody:
         required: true
         content:
@@ -23,13 +26,18 @@ paths:
                 username:
                   type: string
                 password:
-                  type: string   
+                  type: string
+      responses:
+        '200':
+          description: Authentication successful
+        '400':
+          description: Invalid credentials
 
-    
   /auth/logout:
     delete:
       summary: Logout a user
-      tags: [Auth]
+      tags: 
+        - Auth
       responses:
         '200':
           description: Logout successful
@@ -39,7 +47,8 @@ paths:
   /students:
     post:
       summary: Register a student
-      tags: [Auth]
+      tags: 
+        - Auth
       requestBody:
         required: true
         content:
@@ -73,12 +82,11 @@ paths:
         '400':
           description: Invalid input data
 
-  
-
-  /teachers:
+  /teacher:
     post:
       summary: Register a teacher
-      tags: [Auth]
+      tags: 
+        - Auth
       requestBody:
         required: true
         content:
@@ -111,47 +119,51 @@ paths:
                     type: string
         '400':
           description: Invalid input data
-  
-  /teachers:
+
     get:
-      summary: Register a teacher
-      tags: [Auth]
+      summary: Get all teachers
+      tags: 
+        - Auth
       responses:
         '200':
-          description: Teacher registered successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-        '400':
-          description: Invalid input data
-          
-  /techer/avg:
-    get:
-      summary: Register a teacher
-      tags: [Auth]
-      responses:
-        '200':
-          description: Teacher registered successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
+          description: List of teachers retrieved successfully
         '400':
           description: Invalid input data
 
- 
+    /teacher/grades/avg:
+    get:
+      summary: Get average grade for a teacher
+      tags: 
+        - Auth
+      responses:
+        '200':
+          description: Average grade retrieved successfully
+        '400':
+          description: Invalid input data
 
-  /techer/grades:
+
+  /teacher/grades/{id}:
+    get:
+      summary: Get a teacher by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the teacher to get
+      responses:
+        '200':
+          description: Teacher retrieved successfully
+        '400':
+          description: Invalid input data
+
+
+  /teacher/grades:
     post:
-      summary: Add a grade
-      tags: [Auth]
+      summary: Add a grade for a student
+      tags: 
+        - Auth
       requestBody:
         required: true
         content:
@@ -172,13 +184,6 @@ paths:
       responses:
         '200':
           description: Grade added successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
         '400':
           description: Invalid input data
         '404':
@@ -186,7 +191,8 @@ paths:
 
     get:
       summary: Get grades for a class
-      tags: [Auth]
+      tags: 
+        - Auth
       responses:
         '200':
           description: Grades retrieved successfully
@@ -196,6 +202,6 @@ paths:
                 type: array
                 items:
                   type: object
-                  # ... properties of grade object
+                  # Define properties of the grade object
         '400':
           description: Invalid input data

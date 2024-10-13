@@ -43,17 +43,17 @@ export const handelGetGrades = async (req: Request, res: Response):Promise<void>
         console.log(error);
     }
 };
-// export const handelGetAVG = async (req: Request, res: Response):Promise<void> => {
-//     try {
-//         const token = req.cookies.auth_token;
+export const handelGetAVG = async (req: Request, res: Response):Promise<void> => {
+    try {
+        const token = req.cookies.auth_token;
         
-//         const decodedToken = jwt.verify(token, process.env.JWT_SECRET!);
-//         const teacherId = (decodedToken as any).id;
-//         const result =  await techerService.GetAVG(teacherId);               res.status(200).json(result)
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET!);
+        const teacherId = (decodedToken as any).id;
+        const result =  await techerService.GetAVG(teacherId);               res.status(200).json(result)
+    } catch (error) {
+        console.log(error);
+    }
+};
 export const handelGetGrade = async (req: Request, res: Response):Promise<void> => {
     try {
         const token = req.cookies.auth_token;
@@ -65,12 +65,15 @@ export const handelGetGrade = async (req: Request, res: Response):Promise<void> 
         console.log(error);
     }
 };
-// export const handelEditeGrade = async (req: Request, res: Response):Promise<void> => {
-//     try {
-//         const result =  await UserService.getByUserName(req.params.username);
-//         res.status(200).json(result)
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
+export const handelEditeGrade = async (req: Request<any, any ,addGradeDTO>, res: Response):Promise<void> => {
+    try {
+        const token = req.cookies.auth_token;
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET!);
+        const teacherId = (decodedToken as any).id;
+        const result =  await techerService.EditeGrade(teacherId,req.body); 
+              res.status(200).json(result)
+    } catch (error) {
+        console.log(error);
+    }
+};
 

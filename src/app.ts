@@ -15,7 +15,7 @@ import connectDB from "./config/db";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const swaggerDocument = YAML.load(path.join(__dirname, './swager/swagger.yaml'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -23,14 +23,14 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(cookieParser());
 app.use(express.json());
-
-
 connectDB();
+
 
 // Routes
 app.use("/api/auth", authRoute);
 app.use("/api/student",studentRoutes);
-app.use("/api/techer", techerRoutes);
+app.use("/api/teacher", techerRoutes);
+
 
 
 

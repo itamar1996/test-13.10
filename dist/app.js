@@ -17,7 +17,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const db_1 = __importDefault(require("./config/db"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const swaggerDocument = yamljs_1.default.load(path_1.default.join(__dirname, './swager/swagger.yaml'));
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
 app.use((0, cookie_parser_1.default)());
@@ -26,7 +26,7 @@ app.use(express_1.default.json());
 // Routes
 app.use("/api/auth", authRoute_1.default);
 app.use("/api/student", studentRoutes_1.default);
-app.use("/api/techer", techerRoutes_1.default);
+app.use("/api/teacher", techerRoutes_1.default);
 // Error handling middleware
 // app.use(errorHandler);
 app.listen(PORT, () => {

@@ -169,7 +169,8 @@ export default class techerService{
                     status: 404,
                 };
             }
-            if (student.class != teacher.class ) {
+            
+            if (student.class.toString() != teacher.class.toString() ) {
                 return {
                     err: true,
                     message: "class not youres",
@@ -192,60 +193,123 @@ export default class techerService{
             };
         }
     }
+    public static async EditeGrade(teacherId: string, gradeData: addGradeDTO): Promise<responseData<{ name: string; grade: number }[]>> {
+        try {
+            const teacher = await teacherModel.findById(teacherId)
+                .select('class')
+    
+            if (!teacher) {
+                return {
+                    err: true,
+                    message: "Teacher or class not found",
+                    status: 404,
+                };
+            }
+    
+            const student = await studentModel.findById(gradeData.studentId)
+            .select('class tests');
+            if (!student ) {
+                return {
+                    err: true,
+                    message: "student not found",
+                    status: 404,
+                };
+            }
+            if (student.class != teacher.class ) {
+                return {
+                    err: true,
+                    message: "class not youres",
+                    status: 402,
+                };
+            }
+
+            const test = student.tests.find(n => n.name == gradeData.testName)
+            if (!test) {
+                return {
+                    err: true,
+                    message: "test not youres",
+                    status: 402,
+                };
+            }
+            test.grade = gradeData.grade;
+            student.save()
+
+            return {
+                err: false,
+                message: "Fetched student grades successfully",
+                status: 200,
+                data: student.tests,
+            };
+        } catch (error) {
+            console.error("Error fetching grades:", error);
+            return {
+                err: true,
+                message: "Server error",
+                status: 500,
+                data: error
+            };
+        }
+    }
     
     
     
-    // public static async GetAVG(teacherId: string): Promise<responseData<{ name: string; avg: number }>> {
-    //     try {
-    //         const teacher = await teacherModel.findById(teacherId).select('class');
-    //         if (!teacher) {
-    //             return {
-    //                 err: true,
-    //                 message: "Teacher not found",
-    //                 status: 404,
-    //             };
-    //         }
+    public static async GetAVG(teacherId: string): Promise<responseData<{ name: string; avg: number | null }>> {
+        try {
+          const teacher = await teacherModel.findById(teacherId).select('class');
+          if (!teacher) {
+            return {
+              err: true,
+              message: "Teacher not found",
+              status: 404,
+            };
+          }
+          const classDoc = await classModel.findById(teacher.class).populate('students');
+
+          if (!classDoc) {
+            return {
+              err: true,
+              message: "Class not found",
+              status: 404,
+            };
+          }
     
-    //         const result = await classModel.aggregate([
-    //             { $match: { _id: new mongoose.Types.ObjectId(teacher.class) } },
-    //             { $unwind: "$students" },
-    //             { $unwind: "$students.tests" },
-    //             {
-    //                 $group: {
-    //                     _id: "$_id",
-    //                     averageGrade: { $avg: "$students.tests.grade" },
-    //                     name: { $first: "$name" }
-    //                 }
-    //             }
-    //         ]);
+          if (classDoc.students.length === 0) {
+            return {
+              err: false,
+              message: "Class has no students yet",
+              status: 200,
+              data: { name: classDoc.name, avg: null }
+            };
+          }
+          const students = await studentModel.find({ _id: { $in: classDoc.students } }).exec();
+
+        //   const students = classDoc.students as Istudent[];
+             
+          const studentAverages = students.map(student => {
+            if (student.tests.length === 0) return 0;
+            const sum = student.tests.reduce((acc, test) => acc + test.grade, 0);
+            return sum / student.tests.length;
+          });
+
+          const classAverage = studentAverages.reduce((acc, avg) => acc + avg, 0) / students.length;
+
+          await classModel.findByIdAndUpdate(teacher.class.toString(), { avg: classAverage });
+      
     
-    //         if (result.length === 0) {
-    //             const classInfo = await classModel.findById(teacher.class).select('name');
-    //             return {
-    //                 err: false,
-    //                 message: "Class has no grades yet",
-    //                 status: 200,
-    //                 data: { name: classInfo?.name || "Unknown", avg: null }
-    //             };
-    //         }
-    
-    //         return {
-    //             err: false,
-    //             message: "Fetched average grade successfully",
-    //             status: 200,
-    //             data: { name: result[0].name, avg: result[0].averageGrade }
-    //         };
-    //     } catch (error) {
-    //         console.error("Error fetching average grade:", error);
-    //         return {
-    //             err: true,
-    //             message: "Server error",
-    //             status: 500,
-    //             data: error
-    //         };
-    //     }
-    // }
-    
-    
+          return {
+            err: false,
+            message: "Fetched average grade successfully",
+            status: 200,
+            data: { name: classDoc.name, avg: classAverage }
+          };
+        } catch (error) {
+          console.error("Error fetching average grade:", error);
+          return {
+            err: true,
+            message: "Server error",
+            status: 500,
+          };
+        }
+      }
     
 }

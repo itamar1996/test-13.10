@@ -177,7 +177,7 @@ class techerService {
                         status: 404,
                     };
                 }
-                if (student.class != teacher.class) {
+                if (student.class.toString() != teacher.class.toString()) {
                     return {
                         err: true,
                         message: "class not youres",
@@ -198,6 +198,116 @@ class techerService {
                     message: "Server error",
                     status: 500,
                     data: error
+                };
+            }
+        });
+    }
+    static EditeGrade(teacherId, gradeData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const teacher = yield teacherModel_1.default.findById(teacherId)
+                    .select('class');
+                if (!teacher) {
+                    return {
+                        err: true,
+                        message: "Teacher or class not found",
+                        status: 404,
+                    };
+                }
+                const student = yield studentModel_1.default.findById(gradeData.studentId)
+                    .select('class tests');
+                if (!student) {
+                    return {
+                        err: true,
+                        message: "student not found",
+                        status: 404,
+                    };
+                }
+                if (student.class != teacher.class) {
+                    return {
+                        err: true,
+                        message: "class not youres",
+                        status: 402,
+                    };
+                }
+                const test = student.tests.find(n => n.name == gradeData.testName);
+                if (!test) {
+                    return {
+                        err: true,
+                        message: "test not youres",
+                        status: 402,
+                    };
+                }
+                test.grade = gradeData.grade;
+                student.save();
+                return {
+                    err: false,
+                    message: "Fetched student grades successfully",
+                    status: 200,
+                    data: student.tests,
+                };
+            }
+            catch (error) {
+                console.error("Error fetching grades:", error);
+                return {
+                    err: true,
+                    message: "Server error",
+                    status: 500,
+                    data: error
+                };
+            }
+        });
+    }
+    static GetAVG(teacherId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const teacher = yield teacherModel_1.default.findById(teacherId).select('class');
+                if (!teacher) {
+                    return {
+                        err: true,
+                        message: "Teacher not found",
+                        status: 404,
+                    };
+                }
+                const classDoc = yield classModel_1.default.findById(teacher.class).populate('students');
+                if (!classDoc) {
+                    return {
+                        err: true,
+                        message: "Class not found",
+                        status: 404,
+                    };
+                }
+                if (classDoc.students.length === 0) {
+                    return {
+                        err: false,
+                        message: "Class has no students yet",
+                        status: 200,
+                        data: { name: classDoc.name, avg: null }
+                    };
+                }
+                const students = yield studentModel_1.default.find({ _id: { $in: classDoc.students } }).exec();
+                //   const students = classDoc.students as Istudent[];
+                const studentAverages = students.map(student => {
+                    if (student.tests.length === 0)
+                        return 0;
+                    const sum = student.tests.reduce((acc, test) => acc + test.grade, 0);
+                    return sum / student.tests.length;
+                });
+                const classAverage = studentAverages.reduce((acc, avg) => acc + avg, 0) / students.length;
+                yield classModel_1.default.findByIdAndUpdate(teacher.class.toString(), { avg: classAverage });
+                return {
+                    err: false,
+                    message: "Fetched average grade successfully",
+                    status: 200,
+                    data: { name: classDoc.name, avg: classAverage }
+                };
+            }
+            catch (error) {
+                console.error("Error fetching average grade:", error);
+                return {
+                    err: true,
+                    message: "Server error",
+                    status: 500,
                 };
             }
         });
