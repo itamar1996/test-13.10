@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const classModel_1 = __importDefault(require("../models/classModel"));
 const studentModel_1 = __importDefault(require("../models/studentModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-class UserService {
+class studentService {
     static signup(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -115,4 +115,4 @@ class UserService {
         });
     }
 }
-exports.default = UserService;
+exports.default = studentService;

@@ -1,3 +1,4 @@
+import mongoose  from "mongoose";
 import { Types } from "mongoose";
 import registerDTO from "../DTO/registerDTO";
 import responseData from "../DTO/responceDataDTO";
@@ -119,10 +120,9 @@ export default class techerService{
                   status: 404,
                 };
               }
-            const classDoc = await classModel.findById(teacher?.class).populate<{ students: Istudent[] }>('students', 'name tests');
-
-
-
+            const classDoc = await classModel.findById(teacher.class)
+            .populate<{ students: Istudent[]
+            }>('students', 'tests');
             if (!classDoc) {
               return {
                 err: true,
@@ -159,7 +159,14 @@ export default class techerService{
                     status: 404,
                 };
             }
-    
+            if (!mongoose.Types.ObjectId.isValid(studentId))
+            {
+              return {
+                err: true,
+                message: "id not valid",
+                status: 404,
+            };
+            }
             const student = await studentModel.findById(studentId)
             .select('class tests');
             if (!student ) {
@@ -263,7 +270,11 @@ export default class techerService{
               status: 404,
             };
           }
-          const classDoc = await classModel.findById(teacher.class).populate('students');
+          const classDoc = await classModel.findById(teacher.class)
+            .populate<{ students: Istudent[]
+            }>('students', 'tests');
+          // const classDoc = await 
+          // classModel.findById(teacher.class).populate('students');
 
           if (!classDoc) {
             return {
@@ -281,9 +292,10 @@ export default class techerService{
               data: { name: classDoc.name, avg: null }
             };
           }
+          // classDoc.students/''
           const students = await studentModel.find({ _id: { $in: classDoc.students } }).exec();
 
-        //   const students = classDoc.students as Istudent[];
+          // const students = classDoc.students as Istudent[];
              
           const studentAverages = students.map(student => {
             if (student.tests.length === 0) return 0;

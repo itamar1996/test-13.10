@@ -11,10 +11,9 @@ const path_1 = __importDefault(require("path"));
 const authRoute_1 = __importDefault(require("./routes/authRoute"));
 const studentRoutes_1 = __importDefault(require("./routes/studentRoutes"));
 const techerRoutes_1 = __importDefault(require("./routes/techerRoutes"));
-// import verifyUser from './middleware/verifyUser'
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-// import { errorHandler } from "./middleware/errorHandler";
 const db_1 = __importDefault(require("./config/db"));
+const errorHandler_1 = require("./middleware/errorHandler");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
@@ -28,7 +27,7 @@ app.use("/api/auth", authRoute_1.default);
 app.use("/api/student", studentRoutes_1.default);
 app.use("/api/teacher", techerRoutes_1.default);
 // Error handling middleware
-// app.use(errorHandler);
+app.use(errorHandler_1.errorHandler);
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

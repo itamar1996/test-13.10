@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const onlyStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const onlyTeacher = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         // @ts-ignore
@@ -23,8 +23,8 @@ const onlyStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
             return;
         }
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        if (decoded.role !== "student") {
-            res.status(403).json({ message: "Access denied, only Students allowed" });
+        if (decoded.role !== "teacher") {
+            res.status(403).json({ message: "Access denied, only teachers allowed" });
             return;
         }
         //@ts-ignore
@@ -36,4 +36,4 @@ const onlyStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         res.status(401).json({ message: "Unauthorized" });
     }
 });
-exports.default = onlyStudent;
+exports.default = onlyTeacher;

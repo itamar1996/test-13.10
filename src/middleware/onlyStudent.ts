@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import TokenPayloadDTO from "../DTO/tokenPayloadDTO";
+import { error } from "console";
 
-const verifyUser = async (
+const onlyStudent = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -10,20 +11,25 @@ const verifyUser = async (
     try {
       // @ts-ignore
       const token: string = String (req.cookies?.auth_token || "");
-      console.log("Token from cookie:", token);
+      if (!token) {
+        res.status(401).json({ message: "Token missing" });
+        return
+      }
         const decoded: TokenPayloadDTO = jwt.verify(
         token,
         process.env.JWT_SECRET!
       ) as TokenPayloadDTO;
-      console.log(decoded);
-      
+      if (decoded.role !== "student") {
+        res.status(403).json({ message: "Access denied, only Students allowed" });
+        return
+      }      
       //@ts-ignore
       req.user = decoded
       next()
     } catch (err) {
-      console.log(err)
-      res.sendStatus(401)
+      console.error("Error verifying token:", err);
+      res.status(401).json({ message: "Unauthorized" });
     }
   };
 
-  export default verifyUser;
+  export default onlyStudent;

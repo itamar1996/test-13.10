@@ -1,16 +1,26 @@
 openapi: 3.0.0
 info:
-  title: My API
+  title: מערכת ניהול ציונים API
   version: 1.0.0
-  description: A sample API for demonstration
+  description: API לניהול משתמשים, תלמידים, מורים וציונים
 
 servers:
   - url: http://localhost:3001/api
 
+tags:
+  - name: Auth
+    description: פעולות אימות
+  - name: Student
+    description: פעולות הקשורות לתלמידים
+  - name: Teacher
+    description: פעולות הקשורות למורים
+  - name: Grades
+    description: פעולות הקשורות לציונים
+
 paths:
   /auth/login:
     post:
-      summary: Authenticate a user
+      summary: אימות משתמש
       tags: 
         - Auth
       requestBody:
@@ -25,30 +35,32 @@ paths:
               properties:
                 username:
                   type: string
+                  example: "john_doe"
                 password:
                   type: string
+                  example: "secure_password123"
       responses:
         '200':
-          description: Authentication successful
+          description: אימות הצליח
         '400':
-          description: Invalid credentials
+          description: פרטי התחברות לא תקינים
 
   /auth/logout:
     delete:
-      summary: Logout a user
+      summary: התנתקות משתמש
       tags: 
         - Auth
       responses:
         '200':
-          description: Logout successful
+          description: התנתקות הצליחה
         '500':
-          description: Server error during logout
+          description: שגיאת שרת במהלך ההתנתקות
 
-  /students:
+  /student:
     post:
-      summary: Register a student
+      summary: רישום תלמיד
       tags: 
-        - Auth
+        - Student
       requestBody:
         required: true
         content:
@@ -63,15 +75,19 @@ paths:
               properties:
                 username:
                   type: string
-                password:
-                  type: string
+                  example: "student1"
                 email:
                   type: string
+                  example: "student1@example.com"
+                password:
+                  type: string
+                  example: "securepass123"
                 classname:
                   type: string
+                  example: "Class A"
       responses:
         '200':
-          description: Student registered successfully
+          description: תלמיד נרשם בהצלחה
           content:
             application/json:
               schema:
@@ -79,14 +95,15 @@ paths:
                 properties:
                   token:
                     type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         '400':
-          description: Invalid input data
+          description: נתוני קלט לא תקינים
 
   /teacher:
     post:
-      summary: Register a teacher
+      summary: רישום מורה
       tags: 
-        - Auth
+        - Teacher
       requestBody:
         required: true
         content:
@@ -101,15 +118,19 @@ paths:
               properties:
                 username:
                   type: string
-                password:
-                  type: string
+                  example: "teacher1"
                 email:
                   type: string
+                  example: "teacher1@example.com"
+                password:
+                  type: string
+                  example: "securepass456"
                 classname:
                   type: string
+                  example: "Class B"
       responses:
         '200':
-          description: Teacher registered successfully
+          description: מורה נרשם בהצלחה
           content:
             application/json:
               schema:
@@ -117,53 +138,68 @@ paths:
                 properties:
                   token:
                     type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
         '400':
-          description: Invalid input data
+          description: נתוני קלט לא תקינים
 
+  /teacher/grades/avg:
     get:
-      summary: Get all teachers
+      summary: קבלת ציון ממוצע למורה
       tags: 
-        - Auth
+        - Teacher
+        - Grades
       responses:
         '200':
-          description: List of teachers retrieved successfully
+          description: ציון ממוצע התקבל בהצלחה
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  averageGrade:
+                    type: number
+                    example: 85.5
         '400':
-          description: Invalid input data
-
-    /teacher/grades/avg:
-    get:
-      summary: Get average grade for a teacher
-      tags: 
-        - Auth
-      responses:
-        '200':
-          description: Average grade retrieved successfully
-        '400':
-          description: Invalid input data
-
+          description: נתוני קלט לא תקינים
 
   /teacher/grades/{id}:
     get:
-      summary: Get a teacher by ID
+      summary: קבלת ציון לפי מזהה תלמיד
+      tags: 
+        - Teacher
       parameters:
         - in: path
           name: id
           schema:
             type: string
           required: true
-          description: Numeric ID of the teacher to get
+          description: מזהה מספרי של תלמיד
+          example: "12345"
       responses:
         '200':
-          description: Teacher retrieved successfully
+          description: תלמיד נמצא בהצלחה
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  classname:
+                    type: string
         '400':
-          description: Invalid input data
-
+          description: נתוני קלט לא תקינים
 
   /teacher/grades:
     post:
-      summary: Add a grade for a student
+      summary: הוספת ציון לתלמיד
       tags: 
-        - Auth
+        - Teacher
+        - Grades
       requestBody:
         required: true
         content:
@@ -177,31 +213,41 @@ paths:
               properties:
                 studentId:
                   type: string
+                  example: "54321"
                 testName:
                   type: string
+                  example: "מבחן אמצע סמסטר"
                 grade:
                   type: number
+                  example: 92
       responses:
         '200':
-          description: Grade added successfully
+          description: ציון נוסף בהצלחה
         '400':
-          description: Invalid input data
+          description: נתוני קלט לא תקינים
         '404':
-          description: Student not found
+          description: תלמיד לא נמצא
 
     get:
-      summary: Get grades for a class
+      summary: קבלת ציונים עבור כיתה
       tags: 
-        - Auth
+        - Teacher
+        - Grades
       responses:
         '200':
-          description: Grades retrieved successfully
+          description: ציונים התקבלו בהצלחה
           content:
             application/json:
               schema:
                 type: array
                 items:
                   type: object
-                  # Define properties of the grade object
+                  properties:
+                    studentId:
+                      type: string
+                    testName:
+                      type: string
+                    grade:
+                      type: number
         '400':
-          description: Invalid input data
+          description: נתוני קלט לא תקינים

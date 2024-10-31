@@ -30,9 +30,7 @@ class AuthService {
                 }
                 let user = yield studentModel_1.default.findOne({ Username: username }).select('+password');
                 if (!user) {
-                    console.log("dsg");
                     user = yield teacherModel_1.default.findOne({ Username: username }).select('+password');
-                    console.log(user);
                 }
                 if (!user) {
                     return {
@@ -52,11 +50,10 @@ class AuthService {
                 const payload = {
                     username,
                     id: user.id,
-                    role: user.role
+                    role: user.role,
+                    exp: Math.floor(Date.now() / 1000) + 90 * 60
                 };
-                const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
-                    expiresIn: "10m"
-                });
+                const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET);
                 return {
                     err: false,
                     status: 200,

@@ -7,10 +7,12 @@ import path from 'path';
  import authRoute from "./routes/authRoute";
 import studentRoutes from "./routes/studentRoutes";
 import techerRoutes from "./routes/techerRoutes";
-// import verifyUser from './middleware/verifyUser'
 import cookieParser from 'cookie-parser';
-// import { errorHandler } from "./middleware/errorHandler";
 import connectDB from "./config/db";
+import onlyTeacher from "./middleware/onlyTeacher";
+import onlyStudent from "./middleware/onlyStudent";
+
+import { errorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -36,7 +38,7 @@ app.use("/api/teacher", techerRoutes);
 
 
 // Error handling middleware
-// app.use(errorHandler);
+app.use(errorHandler);
 
 
 

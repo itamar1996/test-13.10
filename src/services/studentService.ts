@@ -4,7 +4,7 @@ import responseData from "../DTO/responceDataDTO";
 import classModel from "../models/classModel";
 import studentModel from "../models/studentModel";
 import bcrypt from 'bcrypt'
-export default class UserService{
+export default class studentService{
     public static async signup(user:registerDTO):Promise<responseData<{ id: string }>>{
         try {                        
             const { username, email ,password,classname } = user;
@@ -53,7 +53,8 @@ export default class UserService{
     }
     public static async GetGrades(studentId:string): Promise<responseData<{ name: string; grade: number;}>> {
         try {
-            const userGrades = await studentModel.findById(studentId).select('tests');
+            const userGrades = await 
+            studentModel.findById(studentId).select('tests');
             return {
                 err: false,
                 message: "Fetched grades successfully",

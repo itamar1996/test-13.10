@@ -7,10 +7,6 @@ import studentModel from "../models/studentModel";
 import teacherModel from "../models/teacherModel";
 import bcrypt from 'bcrypt'
 
-
-
-
-
 export default class AuthService {
     public static async login(userData:LoginDTO): Promise<ResponseData<SigninResponseDTO|unknown>>{
         try {
@@ -26,11 +22,8 @@ export default class AuthService {
             let user = await 
             studentModel.findOne({Username: username }).select('+password');
             if (!user) {
-                console.log("dsg");
-                
                 user = await 
                 teacherModel.findOne({Username: username }).select('+password');
-                console.log(user);
             }
             if (!user) {
                 return {
@@ -51,15 +44,13 @@ export default class AuthService {
                 };
             }
 
-        const payload:TokenPayloadDTO = {
-            username,
-            id: user.id,
-            role:user.role
-        }
-        const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-            expiresIn:"10m"
-          })          
-
+            const payload: TokenPayloadDTO = {
+                username,
+                id: user.id,
+                role: user.role,
+                exp: Math.floor(Date.now() / 1000) + 90 * 60 
+            };
+        const token = jwt.sign(payload, process.env.JWT_SECRET as string)          
           return {
             err:false,
             status:200,

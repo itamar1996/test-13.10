@@ -1,5 +1,6 @@
-export default interface TokenPayloadDTO{
-    username: string
-    id: string
-    role:string
+export default interface TokenPayloadDTO {
+    username: string;
+    id: string;
+    role: string;
+    exp?: number;
 }

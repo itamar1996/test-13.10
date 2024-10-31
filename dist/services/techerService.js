@@ -12,7 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("mongoose");
+const mongoose_1 = __importDefault(require("mongoose"));
+const mongoose_2 = require("mongoose");
 const teacherModel_1 = __importDefault(require("../models/teacherModel"));
 const classModel_1 = __importDefault(require("../models/classModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -87,7 +88,7 @@ class techerService {
                         status: 404,
                     };
                 }
-                const student = classDoc.students.find(s => s._id.equals(new mongoose_1.Types.ObjectId(studentId)));
+                const student = classDoc.students.find(s => s._id.equals(new mongoose_2.Types.ObjectId(studentId)));
                 if (!student) {
                     return {
                         err: true,
@@ -130,7 +131,8 @@ class techerService {
                         status: 404,
                     };
                 }
-                const classDoc = yield classModel_1.default.findById(teacher === null || teacher === void 0 ? void 0 : teacher.class).populate('students', 'name tests');
+                const classDoc = yield classModel_1.default.findById(teacher.class)
+                    .populate('students', 'tests');
                 if (!classDoc) {
                     return {
                         err: true,
@@ -165,6 +167,13 @@ class techerService {
                     return {
                         err: true,
                         message: "Teacher or class not found",
+                        status: 404,
+                    };
+                }
+                if (!mongoose_1.default.Types.ObjectId.isValid(studentId)) {
+                    return {
+                        err: true,
+                        message: "id not valid",
                         status: 404,
                     };
                 }
@@ -269,7 +278,10 @@ class techerService {
                         status: 404,
                     };
                 }
-                const classDoc = yield classModel_1.default.findById(teacher.class).populate('students');
+                const classDoc = yield classModel_1.default.findById(teacher.class)
+                    .populate('students', 'tests');
+                // const classDoc = await 
+                // classModel.findById(teacher.class).populate('students');
                 if (!classDoc) {
                     return {
                         err: true,
@@ -285,8 +297,9 @@ class techerService {
                         data: { name: classDoc.name, avg: null }
                     };
                 }
+                // classDoc.students/''
                 const students = yield studentModel_1.default.find({ _id: { $in: classDoc.students } }).exec();
-                //   const students = classDoc.students as Istudent[];
+                // const students = classDoc.students as Istudent[];
                 const studentAverages = students.map(student => {
                     if (student.tests.length === 0)
                         return 0;
